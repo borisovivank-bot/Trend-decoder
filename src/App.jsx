@@ -1,26 +1,58 @@
 import { useState } from 'react'
 import './App.css'
-import heroBg from './assets/hero-bg.png'
 
 function App() {
   const [selectedFile, setSelectedFile] = useState(null)
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [results, setResults] = useState(null)
+  const [analysisProgress, setAnalysisProgress] = useState(0)
+  const [detectedCategories, setDetectedCategories] = useState([])
+
+  const handleReset = () => {
+    setSelectedFile(null)
+    setResults(null)
+    setAnalysisProgress(0)
+    setDetectedCategories([])
+    setIsAnalyzing(false)
+  }
 
   const handleFileUpload = (event) => {
     const file = event.target.files[0]
     if (file) {
       setSelectedFile(URL.createObjectURL(file))
       setIsAnalyzing(true)
-      // Simulate AI analysis
-      setTimeout(() => {
-        setIsAnalyzing(false)
-        setResults([
-          { id: 1, name: 'Кашемировое пальто', brand: 'Loro Piana', price: '245,000 ₽', link: '#' },
-          { id: 2, name: 'Шелковая блуза', brand: 'Brunello Cucinelli', price: '89,000 ₽', link: '#' },
-          { id: 3, name: 'Брюки прямого кроя', brand: 'Prada', price: '110,000 ₽', link: '#' }
-        ])
-      }, 3000)
+      setAnalysisProgress(0)
+      setDetectedCategories([])
+      setResults(null)
+
+      // Simulate step-by-step analysis
+      let progress = 0
+      const interval = setInterval(() => {
+        progress += 2
+        setAnalysisProgress(progress)
+
+        if (progress === 30) {
+          setDetectedCategories(prev => [...prev, 'аксессуары'])
+        }
+        if (progress === 60) {
+          setDetectedCategories(prev => [...prev, 'верхняя одежда'])
+        }
+        if (progress === 90) {
+          setDetectedCategories(prev => [...prev, 'нижняя'])
+        }
+
+        if (progress >= 100) {
+          clearInterval(interval)
+          setTimeout(() => {
+            setIsAnalyzing(false)
+            setResults([
+              { id: 1, name: 'Пальто из шерсти и кашемира', brand: 'Massimo Dutti', price: '45,900 ₽', link: 'https://www.massimodutti.com/' },
+              { id: 2, name: 'Сумка-багет из лаковой кожи', brand: 'BY FAR', price: '38,500 ₽', link: 'https://www.farfetch.com/' },
+              { id: 3, name: 'Брюки прямого кроя из шелка', brand: '12 STOREEZ', price: '19,900 ₽', link: 'https://12storeez.com/' }
+            ])
+          }, 1000)
+        }
+      }, 50)
     }
   }
 
@@ -43,7 +75,11 @@ function App() {
       </header>
 
       <main>
-        <section className="hero-section" style={{ backgroundImage: `linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url(${heroBg})` }}>
+        <section className="hero-section">
+          <div className="hero-background-blobs">
+            <div className="blob blob-1"></div>
+            <div className="blob blob-2"></div>
+          </div>
           <div className="container hero-content animate-fade-in">
             <h2 className="hero-title">Раскройте секреты любого стиля</h2>
             <p className="hero-subtitle">Загрузите фото образа, и наш ИИ найдет каждую вещь за считанные секунды.</p>
@@ -58,10 +94,27 @@ function App() {
               ) : (
                 <div className="preview-area">
                   <img src={selectedFile} alt="Preview" className="preview-img" />
+                  {!isAnalyzing && (
+                    <button className="btn-reset" onClick={handleReset}>
+                      <span>✕</span> Отменить
+                    </button>
+                  )}
                   {isAnalyzing && (
                     <div className="analysis-overlay">
-                      <div className="loader"></div>
-                      <p>Анализируем ваш стиль...</p>
+                      <div className="analysis-content">
+                        <div className="analysis-scanner"></div>
+                        <div className="progress-bar-container">
+                          <div className="progress-bar-fill" style={{ width: `${analysisProgress}%` }}></div>
+                        </div>
+                        <p className="analysis-status">Анализируем ваш стиль: {analysisProgress}%</p>
+                        <div className="detection-tags">
+                          {detectedCategories.map((cat, idx) => (
+                            <div key={idx} className="tag-plaque animate-pop">
+                              {cat}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
                     </div>
                   )}
                 </div>

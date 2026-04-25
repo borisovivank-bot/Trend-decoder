@@ -1,15 +1,17 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap');
 
 :root {
-  --primary: #c5a059; /* Gold */
-  --secondary: #1a1a1a;
-  --accent: #3a5a40;
-  --text: #ffffff;
-  --text-muted: #a0a0a0;
-  --bg: #0a0a0a;
-  --glass: rgba(255, 255, 255, 0.05);
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --primary: #a855f7; /* Vibrant Purple */
+  --primary-glow: rgba(168, 85, 247, 0.4);
+  --secondary: #1f1f1f; /* Dark Gray */
+  --accent: #d8b4fe; /* Light Purple */
+  --text: #f3f4f6;
+  --text-muted: #9ca3af;
+  --bg: #0f172a; /* Deep charcoal/blue-gray */
+  --bg-darker: #020617;
+  --glass: rgba(255, 255, 255, 0.03);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 * {
