@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { analyzeClothing } from './geminiService'
 import './App.css'
 
 function App() {
@@ -7,6 +8,7 @@ function App() {
   const [results, setResults] = useState(null)
   const [analysisProgress, setAnalysisProgress] = useState(0)
   const [detectedCategories, setDetectedCategories] = useState([])
+  const [error, setError] = useState(null)
 
   const handleReset = () => {
     setSelectedFile(null)
@@ -14,9 +16,10 @@ function App() {
     setAnalysisProgress(0)
     setDetectedCategories([])
     setIsAnalyzing(false)
+    setError(null)
   }
 
-  const handleFileUpload = (event) => {
+  const handleFileUpload = async (event) => {
     const file = event.target.files[0]
     if (file) {
       setSelectedFile(URL.createObjectURL(file))
@@ -24,35 +27,28 @@ function App() {
       setAnalysisProgress(0)
       setDetectedCategories([])
       setResults(null)
+      setError(null)
 
-      // Simulate step-by-step analysis
-      let progress = 0
-      const interval = setInterval(() => {
-        progress += 2
-        setAnalysisProgress(progress)
+      // Simulate progress while waiting for API
+      const progressInterval = setInterval(() => {
+        setAnalysisProgress(prev => {
+          if (prev >= 95) return 95
+          return prev + 5
+        })
+      }, 500)
 
-        if (progress === 30) {
-          setDetectedCategories(prev => [...prev, 'аксессуары'])
-        }
-        if (progress === 60) {
-          setDetectedCategories(prev => [...prev, 'верхняя одежда'])
-        }
-        if (progress === 90) {
-          setDetectedCategories(prev => [...prev, 'нижняя'])
-        }
-
-        if (progress >= 100) {
-          clearInterval(interval)
-          setTimeout(() => {
-            setIsAnalyzing(false)
-            setResults([
-              { id: 1, name: 'Пальто из шерсти и кашемира', brand: 'Massimo Dutti', price: '45,900 ₽', link: 'https://www.massimodutti.com/' },
-              { id: 2, name: 'Сумка-багет из лаковой кожи', brand: 'BY FAR', price: '38,500 ₽', link: 'https://www.farfetch.com/' },
-              { id: 3, name: 'Брюки прямого кроя из шелка', brand: '12 STOREEZ', price: '19,900 ₽', link: 'https://12storeez.com/' }
-            ])
-          }, 1000)
-        }
-      }, 50)
+      try {
+        const clothingResults = await analyzeClothing(file)
+        setResults(clothingResults)
+        setAnalysisProgress(100)
+        setDetectedCategories(['анализ завершен'])
+      } catch (err) {
+        console.error(err)
+        setError("Ошибка при обращении к Gemini. Проверьте API ключ в .env")
+      } finally {
+        clearInterval(progressInterval)
+        setIsAnalyzing(false)
+      }
     }
   }
 
@@ -83,6 +79,8 @@ function App() {
           <div className="container hero-content animate-fade-in">
             <h2 className="hero-title">Раскройте секреты любого стиля</h2>
             <p className="hero-subtitle">Загрузите фото образа, и наш ИИ найдет каждую вещь за считанные секунды.</p>
+            
+            {error && <p className="error-message">{error}</p>}
             
             <div className="upload-container glass">
               {!selectedFile ? (
