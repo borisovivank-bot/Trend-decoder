@@ -122,7 +122,7 @@ function App() {
         </section>
 
         {results && (
-          <section className="results-section container animate-fade-in">
+          <section className="results-section container animate-fade-in" id="results">
             <h3 className="section-title">Найденные товары</h3>
             <div className="results-grid">
               {results.map(item => (
@@ -131,13 +131,42 @@ function App() {
                     <h4>{item.name}</h4>
                     <p className="brand">{item.brand}</p>
                     <p className="price">{item.price}</p>
-                    <a href={item.link} className="btn-buy">Купить сейчас</a>
+                    <a href={item.link} className="btn-buy" target="_blank" rel="noopener noreferrer">Купить сейчас</a>
                   </div>
                 </div>
               ))}
             </div>
           </section>
         )}
+
+        <section className="how-it-works container" id="how-it-works">
+          <h3 className="section-title">Как это работает</h3>
+          <div className="steps-grid">
+            <div className="step-card glass">
+              <div className="step-number">01</div>
+              <h4>Загрузка</h4>
+              <p>Просто загрузите фотографию образа, который вам понравился.</p>
+            </div>
+            <div className="step-card glass">
+              <div className="step-number">02</div>
+              <h4>ИИ Анализ</h4>
+              <p>Наш Gemini ИИ мгновенно распознает все элементы одежды на фото.</p>
+            </div>
+            <div className="step-card glass">
+              <div className="step-number">03</div>
+              <h4>Поиск и Покупка</h4>
+              <p>Получите ссылки на похожие товары и узнайте примерную стоимость.</p>
+            </div>
+          </div>
+        </section>
+
+        <section className="about-section glass container" id="about">
+          <div className="about-content">
+            <h3 className="section-title">О проекте Trend Decoder</h3>
+            <p>Trend Decoder — это ваш персональный стилист на базе искусственного интеллекта. Мы верим, что мода должна быть доступной, а поиск идеального образа — простым и вдохновляющим.</p>
+            <p>Наша миссия — помочь вам найти вещи, которые вы видите на улицах, в соцсетях или журналах, используя новейшие технологии компьютерного зрения от Google.</p>
+          </div>
+        </section>
       </main>
 
       <footer className="container">

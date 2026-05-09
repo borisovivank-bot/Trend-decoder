@@ -22,8 +22,14 @@ app.post('/api/analyze', upload.single('image'), async (req, res) => {
       return res.status(400).send('No image uploaded.');
     }
 
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    if (!process.env.GEMINI_API_KEY) {
+      console.error("API Key is missing in .env");
+      return res.status(500).json({ error: "API Key is missing in .env" });
+    }
 
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+
+    console.log("Sending request to Gemini API...");
     const base64Data = req.file.buffer.toString('base64');
     const mimeType = req.file.mimetype;
 
@@ -41,6 +47,7 @@ app.post('/api/analyze', upload.single('image'), async (req, res) => {
 
     const response = await result.response;
     const text = response.text();
+    console.log("Received response from Gemini.");
     
     // Attempt to parse JSON from response
     let clothingResults;
@@ -52,13 +59,14 @@ app.post('/api/analyze', upload.single('image'), async (req, res) => {
         clothingResults = [{ id: 1, name: text, brand: 'AI Analysis', price: '-', link: '#' }];
       }
     } catch (e) {
+      console.error("JSON Parse Error:", e);
       clothingResults = [{ id: 1, name: text, brand: 'AI Analysis', price: '-', link: '#' }];
     }
 
     res.json(clothingResults);
   } catch (error) {
-    console.error("Gemini API Error:", error);
-    res.status(500).json({ error: error.message });
+    console.error("FULL Gemini API Error:", error);
+    res.status(500).json({ error: error.message, stack: error.stack });
   }
 });
 
