@@ -48,7 +48,7 @@ app.post('/api/analyze', upload.single('image'), async (req, res) => {
     const response = await result.response;
     const text = response.text();
     console.log("Received response from Gemini.");
-    
+
     // Attempt to parse JSON from response
     let clothingResults;
     try {
